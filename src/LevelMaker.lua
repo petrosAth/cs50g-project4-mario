@@ -22,6 +22,11 @@ function LevelMaker.generate(width, height)
     local tileset = math.random(20)
     local topperset = math.random(20)
 
+    -- pick color and location for key and lock placement
+    local keylockset = math.random(4)
+    local keyX = math.random(5, width - 5)
+    local lockX = math.random(keyX + 1, width)
+
     -- insert blank tables into tiles for later access
     for x = 1, height do
         table.insert(tiles, {})
