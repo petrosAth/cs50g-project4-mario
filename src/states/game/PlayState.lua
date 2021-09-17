@@ -18,23 +18,8 @@ function PlayState:init()
     self.gravityOn = true
     self.gravityAmount = 6
 
-    self.player = Player({
-        x = 0, y = 0,
-        width = 16, height = 20,
-        texture = 'green-alien',
-        stateMachine = StateMachine {
-            ['idle'] = function() return PlayerIdleState(self.player) end,
-            ['walking'] = function() return PlayerWalkingState(self.player) end,
-            ['jump'] = function() return PlayerJumpState(self.player, self.gravityAmount) end,
-            ['falling'] = function() return PlayerFallingState(self.player, self.gravityAmount) end
-        },
-        map = self.tileMap,
-        level = self.level
-    })
-
+    self:spawnPlayer()
     self:spawnEnemies()
-
-    self.player:changeState('falling')
 end
 
 function PlayState:update(dt)
@@ -90,6 +75,43 @@ function PlayState:updateCamera()
 
     -- adjust background X to move a third the rate of the camera for parallax
     self.backgroundX = (self.camX / 3) % 256
+end
+
+--[[
+    Spawn player and make sure ther is no chasm where it lands
+]]
+function PlayState:spawnPlayer()
+    for x = 1, self.tileMap.width do
+
+        for y = 1, self.tileMap.height do
+
+            -- check for tile id with ground flag
+            if self.tileMap.tiles[y][x].id == TILE_ID_GROUND then
+
+                self.player = Player({
+                    x = (x - 1) * TILE_SIZE,
+                    y = 0,
+                    width = 16, height = 20,
+                    texture = 'green-alien',
+                    stateMachine = StateMachine {
+                        ['idle'] = function() return PlayerIdleState(self.player) end,
+                        ['walking'] = function() return PlayerWalkingState(self.player) end,
+                        ['jump'] = function() return PlayerJumpState(self.player, self.gravityAmount) end,
+                        ['falling'] = function() return PlayerFallingState(self.player, self.gravityAmount) end
+                    },
+                    map = self.tileMap,
+                    level = self.level
+                })
+
+                self.player:changeState('falling')
+
+                -- break the loop after the player gets spawned
+                goto continue
+            end
+        end
+    end
+
+    ::continue::
 end
 
 --[[
