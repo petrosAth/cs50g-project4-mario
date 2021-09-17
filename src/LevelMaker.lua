@@ -100,8 +100,32 @@ function LevelMaker.generate(width, height)
                 )
             end
 
-            -- chance to spawn a block
-            if math.random(10) == 1 then
+            -- spawn key and lock
+            if x == keyX then
+                table.insert(objects,
+
+                    -- jump block
+                    GameObject {
+                        texture = 'keys-and-locks',
+                        x = (x - 1) * TILE_SIZE,
+                        y = (blockHeight - 1) * TILE_SIZE - 4,
+                        width = 16,
+                        height = 16,
+                        frame = keylockset,
+                        collidable = true,
+                        consumable = true,
+                        solid = false,
+
+                        -- gem has its own function to add to the player's score
+                        onConsume = function(player, object)
+                            gSounds['pickup']:play()
+                            player.score = player.score + 100
+                        end
+                    }
+                )
+
+                -- chance to spawn a block
+            elseif math.random(10) == 1 then
                 table.insert(objects,
 
                     -- jump block
