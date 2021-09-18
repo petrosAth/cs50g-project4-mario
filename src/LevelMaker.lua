@@ -27,6 +27,10 @@ function LevelMaker.generate(width, height)
     local keyX = math.random(5, width - 5)
     local lockX = math.random(keyX + 1, width)
 
+    -- flag for key pickup
+    local keyObtained = false
+    local levelUnlocked = false
+
     -- insert blank tables into tiles for later access
     for x = 1, height do
         table.insert(tiles, {})
@@ -100,11 +104,11 @@ function LevelMaker.generate(width, height)
                 )
             end
 
-            -- spawn key and lock
+            -- spawn key
             if x == keyX then
                 table.insert(objects,
 
-                    -- jump block
+                    -- key block
                     GameObject {
                         texture = 'keys-and-locks',
                         x = (x - 1) * TILE_SIZE,
@@ -116,15 +120,47 @@ function LevelMaker.generate(width, height)
                         consumable = true,
                         solid = false,
 
-                        -- gem has its own function to add to the player's score
+                        -- pick up the key
                         onConsume = function(player, object)
                             gSounds['pickup']:play()
                             player.score = player.score + 100
+                            keyObtained = true
                         end
                     }
                 )
+            -- spawn lock
+            elseif x == lockX then
+                table.insert(objects,
 
-                -- chance to spawn a block
+                    -- lock block
+                    GameObject {
+                        texture = 'keys-and-locks',
+                        x = (x - 1) * TILE_SIZE,
+                        y = (blockHeight - 1) * TILE_SIZE,
+                        width = 16,
+                        height = 16,
+
+                        -- make it the same color as the key
+                        frame = keylockset + 4,
+                        collidable = true,
+                        hit = false,
+                        solid = true,
+
+                        -- collision function takes itself
+                        onCollide = function(obj)
+
+                            -- unlock the level if the key is obtained and level is locked
+                            if not obj.hit and keyObtained then
+                                levelUnlocked = true
+                                gSounds['pickup']:play()
+                                obj.hit = true
+                            end
+
+                            gSounds['empty-block']:play()
+                        end
+                    }
+                )
+            -- chance to spawn a block
             elseif math.random(10) == 1 then
                 table.insert(objects,
 
