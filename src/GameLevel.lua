@@ -14,6 +14,8 @@ function GameLevel:init(entities, objects, tilemap)
     self.entities = entities
     self.objects = objects
     self.tileMap = tilemap
+    self.key = false
+    self.lockBlock = false
 end
 
 --[[
@@ -37,6 +39,12 @@ function GameLevel:update(dt)
     self.tileMap:update(dt)
 
     for k, object in pairs(self.objects) do
+        -- if the player has picked up the key make the lock box non solid so it can be consumed
+        if self.key then
+            if object.type == 'lockbox' then
+                object.solid = false
+            end
+        end
         object:update(dt)
     end
 

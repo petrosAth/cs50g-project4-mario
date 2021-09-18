@@ -76,6 +76,9 @@ function Player:checkObjectCollisions()
                 table.insert(collidedObjects, object)
             elseif object.consumable then
                 object.onConsume(self)
+                if object.type == 'key' then
+                    self.level.key = true
+                end
                 table.remove(self.level.objects, k)
             end
         end

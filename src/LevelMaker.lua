@@ -22,14 +22,10 @@ function LevelMaker.generate(width, height)
     local tileset = math.random(20)
     local topperset = math.random(20)
 
-    -- pick color and location for key and lock placement
-    local keylockset = math.random(4)
-    local keyX = math.random(5, width - 5)
-    local lockX = math.random(keyX + 1, width)
-
-    -- flag for key pickup
-    local keyObtained = false
-    local levelUnlocked = false
+    -- pick color for key, lock and flag
+    local keyLockFlagColor = math.random(4)
+    local keyX = math.random(5, width - 10)
+    local lockX = math.random(keyX + 1, width - 5)
 
     -- insert blank tables into tiles for later access
     for x = 1, height do
@@ -47,7 +43,7 @@ function LevelMaker.generate(width, height)
         end
 
         -- chance to just be emptiness
-        if math.random(7) == 1 then
+        if math.random(7) == 1 and x ~= keyX and x ~= lockX then
             for y = 7, height do
                 table.insert(tiles[y],
                     Tile(x, y, tileID, nil, tileset, topperset))
@@ -115,16 +111,15 @@ function LevelMaker.generate(width, height)
                         y = (blockHeight - 1) * TILE_SIZE - 4,
                         width = 16,
                         height = 16,
-                        frame = keylockset,
+                        frame = keyLockFlagColor,
                         collidable = true,
                         consumable = true,
                         solid = false,
+                        type = 'key',
 
-                        -- pick up the key
                         onConsume = function(player, object)
                             gSounds['pickup']:play()
                             player.score = player.score + 100
-                            keyObtained = true
                         end
                     }
                 )
@@ -141,21 +136,19 @@ function LevelMaker.generate(width, height)
                         height = 16,
 
                         -- make it the same color as the key
-                        frame = keylockset + 4,
+                        frame = keyLockFlagColor + 4,
                         collidable = true,
-                        hit = false,
+                        consumable = true,
                         solid = true,
+                        type = 'lockbox',
 
-                        -- collision function takes itself
+                        onConsume = function(player, object)
+                            gSounds['pickup']:play()
+                            player.score = player.score + 100
+                        end,
+
+                        -- if the player hasn't picked up the key, nothing happens on collide
                         onCollide = function(obj)
-
-                            -- unlock the level if the key is obtained and level is locked
-                            if not obj.hit and keyObtained then
-                                levelUnlocked = true
-                                gSounds['pickup']:play()
-                                obj.hit = true
-                            end
-
                             gSounds['empty-block']:play()
                         end
                     }
