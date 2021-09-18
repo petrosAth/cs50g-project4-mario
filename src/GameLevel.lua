@@ -41,8 +41,13 @@ function GameLevel:update(dt)
     for k, object in pairs(self.objects) do
         -- if the player has picked up the key make the lock box non solid so it can be consumed
         if self.key then
-            if object.type == 'lockbox' then
+            if object.type == 'lockBlock' then
                 object.solid = false
+            end
+        end
+        if self.lockBlock == true then
+            if object.type == 'post' or object.type == 'flag' then
+                object.onCollide(object)
             end
         end
         object:update(dt)
@@ -54,11 +59,11 @@ function GameLevel:update(dt)
 end
 
 function GameLevel:render()
-    self.tileMap:render()
-
     for k, object in pairs(self.objects) do
         object:render()
     end
+
+    self.tileMap:render()
 
     for k, entity in pairs(self.entities) do
         entity:render()

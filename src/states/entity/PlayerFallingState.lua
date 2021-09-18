@@ -74,6 +74,8 @@ function PlayerFallingState:update(dt)
                 object.onConsume(self.player)
                 if object.type == 'key' then
                     self.player.level.key = true
+                elseif object.type == 'lockBlock' then
+                    self.player.level.lockBlock = true
                 end
                 table.remove(self.player.level.objects, k)
             end

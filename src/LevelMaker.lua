@@ -23,7 +23,7 @@ function LevelMaker.generate(width, height)
     local topperset = math.random(20)
 
     -- pick color for key, lock and flag
-    local keyLockFlagColor = math.random(4)
+    local keyLockFlagColor = math.random(0, 3)
     local keyX = math.random(5, width - 10)
     local lockX = math.random(keyX + 1, width - 5)
 
@@ -43,7 +43,7 @@ function LevelMaker.generate(width, height)
         end
 
         -- chance to just be emptiness
-        if math.random(7) == 1 and x ~= keyX and x ~= lockX then
+        if math.random(7) == 1 and x ~= keyX and x ~= lockX and x < width - 1 then
             for y = 7, height do
                 table.insert(tiles[y],
                     Tile(x, y, tileID, nil, tileset, topperset))
@@ -60,7 +60,7 @@ function LevelMaker.generate(width, height)
             end
 
             -- chance to generate a pillar
-            if math.random(8) == 1 then
+            if math.random(8) == 1 and x < width - 1 then
                 blockHeight = 2
                 
                 -- chance to generate bush on pillar
@@ -100,8 +100,63 @@ function LevelMaker.generate(width, height)
                 )
             end
 
+            -- spawn goal post
+            if x == width - 1 then
+                for y = 0, 2 do
+                    table.insert(objects,
+                        -- goal post
+                        GameObject {
+                            texture = 'flags',
+                            x = (x - 1) * TILE_SIZE + 6,
+                            y = (blockHeight + y + 2) * TILE_SIZE,
+                            width = 16,
+                            height = 16,
+
+                            -- make it the same color as the key
+                            frame = keyLockFlagColor + 3 + y * 9,
+                            collidable = true,
+                            consumable = false,
+                            solid = false,
+                            type = 'post',
+
+                            onCollide = function(obj)
+                                Timer.tween(1, {
+                                    [obj] = {y = (blockHeight + y - 1) * TILE_SIZE}
+                                })
+                            end
+                        }
+                    )
+                end
+                table.insert(objects,
+                    -- flag
+                    GameObject {
+                        texture = 'flags',
+                        x = (x) * TILE_SIZE,
+                        y = (blockHeight + 2) * TILE_SIZE + 6,
+                        width = 16,
+                        height = 16,
+
+                        -- make it the same color as the key
+                        frame = 7 + (keyLockFlagColor * 9),
+                        collidable = true,
+                        consumable = true,
+                        solid = false,
+                        type = 'flag',
+
+                        onConsume = function(player, object)
+                            gSounds['pickup']:play()
+                            player.score = player.score + 100
+                        end,
+
+                        onCollide = function(obj)
+                            Timer.tween(1, {
+                                [obj] = {y = (blockHeight - 1) * TILE_SIZE + 6}
+                            })
+                        end,
+                    }
+                )
             -- spawn key
-            if x == keyX then
+            elseif x == keyX then
                 table.insert(objects,
 
                     -- key block
@@ -111,7 +166,7 @@ function LevelMaker.generate(width, height)
                         y = (blockHeight - 1) * TILE_SIZE - 4,
                         width = 16,
                         height = 16,
-                        frame = keyLockFlagColor,
+                        frame = keyLockFlagColor + 1,
                         collidable = true,
                         consumable = true,
                         solid = false,
@@ -120,7 +175,7 @@ function LevelMaker.generate(width, height)
                         onConsume = function(player, object)
                             gSounds['pickup']:play()
                             player.score = player.score + 100
-                        end
+                        end,
                     }
                 )
             -- spawn lock
@@ -136,11 +191,11 @@ function LevelMaker.generate(width, height)
                         height = 16,
 
                         -- make it the same color as the key
-                        frame = keyLockFlagColor + 4,
+                        frame = keyLockFlagColor + 5,
                         collidable = true,
                         consumable = true,
                         solid = true,
-                        type = 'lockbox',
+                        type = 'lockBlock',
 
                         onConsume = function(player, object)
                             gSounds['pickup']:play()

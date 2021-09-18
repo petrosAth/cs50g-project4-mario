@@ -78,6 +78,8 @@ function Player:checkObjectCollisions()
                 object.onConsume(self)
                 if object.type == 'key' then
                     self.level.key = true
+                elseif object.type == 'lockBlock' then
+                    self.level.lockBlock = true
                 end
                 table.remove(self.level.objects, k)
             end
