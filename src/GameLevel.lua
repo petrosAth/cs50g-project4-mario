@@ -47,7 +47,7 @@ function GameLevel:update(dt)
         end
         if self.lockBlock == true then
             if object.type == 'post' or object.type == 'flag' then
-                object.onCollide(object)
+                object.onActivation(object)
             end
         end
         object:update(dt)

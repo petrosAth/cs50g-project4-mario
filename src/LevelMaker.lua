@@ -114,12 +114,16 @@ function LevelMaker.generate(width, height)
 
                             -- make it the same color as the key
                             frame = keyLockFlagColor + 3 + y * 9,
-                            collidable = true,
-                            consumable = false,
+                            collidable = false,
+                            consumable = true,
                             solid = false,
                             type = 'post',
 
-                            onCollide = function(obj)
+                            onConsume = function(player)
+                                gSounds['pickup']:play()
+                            end,
+
+                            onActivation = function(obj)
                                 Timer.tween(1, {
                                     [obj] = {y = (blockHeight + y - 1) * TILE_SIZE}
                                 })
@@ -138,17 +142,12 @@ function LevelMaker.generate(width, height)
 
                         -- make it the same color as the key
                         frame = 7 + (keyLockFlagColor * 9),
-                        collidable = true,
-                        consumable = true,
+                        collidable = false,
+                        consumable = false,
                         solid = false,
                         type = 'flag',
 
-                        onConsume = function(player, object)
-                            gSounds['pickup']:play()
-                            player.score = player.score + 100
-                        end,
-
-                        onCollide = function(obj)
+                        onActivation = function(obj)
                             Timer.tween(1, {
                                 [obj] = {y = (blockHeight - 1) * TILE_SIZE + 6}
                             })
@@ -172,9 +171,8 @@ function LevelMaker.generate(width, height)
                         solid = false,
                         type = 'key',
 
-                        onConsume = function(player, object)
+                        onConsume = function()
                             gSounds['pickup']:play()
-                            player.score = player.score + 100
                         end,
                     }
                 )
@@ -197,19 +195,18 @@ function LevelMaker.generate(width, height)
                         solid = true,
                         type = 'lockBlock',
 
-                        onConsume = function(player, object)
+                        onConsume = function()
                             gSounds['pickup']:play()
-                            player.score = player.score + 100
                         end,
 
                         -- if the player hasn't picked up the key, nothing happens on collide
-                        onCollide = function(obj)
+                        onCollide = function()
                             gSounds['empty-block']:play()
                         end
                     }
                 )
             -- chance to spawn a block
-            elseif math.random(10) == 1 then
+            elseif math.random(10) == 1 and x < width - 1 then
                 table.insert(objects,
 
                     -- jump block

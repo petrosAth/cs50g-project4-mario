@@ -70,6 +70,11 @@ function PlayerJumpState:update(dt)
                     self.player.level.key = true
                 elseif object.type == 'lockBlock' then
                     self.player.level.lockBlock = true
+                elseif object.type == 'post' then
+                    gStateMachine:change('play', {
+                        score = self.player.score,
+                        mapWidth = self.player.mapWidth + 10
+                    })
                 end
                 table.remove(self.player.level.objects, k)
             end

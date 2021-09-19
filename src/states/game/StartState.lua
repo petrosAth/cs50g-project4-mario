@@ -17,7 +17,10 @@ end
 
 function StartState:update(dt)
     if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
-        gStateMachine:change('play')
+        gStateMachine:change('play', {
+            score = 0,
+            mapWidth = 20
+        })
     end
 end
 

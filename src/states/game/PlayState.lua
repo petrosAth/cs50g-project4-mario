@@ -7,16 +7,20 @@
 
 PlayState = Class{__includes = BaseState}
 
-function PlayState:init()
+function PlayState:enter(params)
     self.camX = 0
     self.camY = 0
-    self.level = LevelMaker.generate(100, 10)
+    --self.width = self.width + params.width
+    self.mapWidth = params.mapWidth
+    self.level = LevelMaker.generate(self.mapWidth, 10)
     self.tileMap = self.level.tileMap
     self.background = math.random(3)
     self.backgroundX = 0
 
     self.gravityOn = true
     self.gravityAmount = 6
+
+    self.score = params.score
 
     self:spawnPlayer()
     self:spawnEnemies()
@@ -64,6 +68,8 @@ function PlayState:render()
     love.graphics.print(tostring(self.player.score), 5, 5)
     love.graphics.setColor(1, 1, 1, 1)
     love.graphics.print(tostring(self.player.score), 4, 4)
+    love.graphics.print(tostring(self.score), 4, 20)
+    love.graphics.print(tostring(self.mapWidth), 4, 35)
 end
 
 function PlayState:updateCamera()
@@ -80,7 +86,7 @@ end
 --[[
     Spawn player and make sure ther is no chasm where it lands
 ]]
-function PlayState:spawnPlayer()
+function PlayState:spawnPlayer(mapWidth, totalScore)
     for x = 1, self.tileMap.width do
 
         for y = 1, self.tileMap.height do
@@ -100,7 +106,9 @@ function PlayState:spawnPlayer()
                         ['falling'] = function() return PlayerFallingState(self.player, self.gravityAmount) end
                     },
                     map = self.tileMap,
-                    level = self.level
+                    level = self.level,
+                    score = self.score,
+                    mapWidth = self.mapWidth
                 })
 
                 self.player:changeState('falling')

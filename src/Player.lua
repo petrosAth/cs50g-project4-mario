@@ -12,7 +12,8 @@ Player = Class{__includes = Entity}
 
 function Player:init(def)
     Entity.init(self, def)
-    self.score = 0
+    self.score = def.score
+    self.mapWidth = def.mapWidth
 end
 
 function Player:update(dt)
@@ -80,6 +81,11 @@ function Player:checkObjectCollisions()
                     self.level.key = true
                 elseif object.type == 'lockBlock' then
                     self.level.lockBlock = true
+                elseif object.type == 'post' then
+                    gStateMachine:change('play', {
+                        score = self.score,
+                        mapWidth = self.mapWidth + 10
+                    })
                 end
                 table.remove(self.level.objects, k)
             end
