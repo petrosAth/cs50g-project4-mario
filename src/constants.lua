@@ -18,6 +18,9 @@ WINDOW_HEIGHT = 720
 VIRTUAL_WIDTH = 256
 VIRTUAL_HEIGHT = 144
 
+-- ititial map width
+MAP_WIDTH = 50
+
 -- global standard tile size
 TILE_SIZE = 16
 

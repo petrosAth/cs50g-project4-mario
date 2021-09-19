@@ -77,16 +77,6 @@ function Player:checkObjectCollisions()
                 table.insert(collidedObjects, object)
             elseif object.consumable then
                 object.onConsume(self)
-                if object.type == 'key' then
-                    self.level.key = true
-                elseif object.type == 'lockBlock' then
-                    self.level.lockBlock = true
-                elseif object.type == 'post' then
-                    gStateMachine:change('play', {
-                        score = self.score,
-                        mapWidth = self.mapWidth + 10
-                    })
-                end
                 table.remove(self.level.objects, k)
             end
         end

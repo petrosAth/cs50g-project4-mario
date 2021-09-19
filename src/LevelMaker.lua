@@ -115,15 +115,22 @@ function LevelMaker.generate(width, height)
                             -- make it the same color as the key
                             frame = keyLockFlagColor + 3 + y * 9,
                             collidable = false,
-                            consumable = true,
+                            consumable = false,
                             solid = false,
                             type = 'post',
 
                             onConsume = function(player)
                                 gSounds['pickup']:play()
+
+                                gStateMachine:change('play', {
+                                    score = player.score,
+                                    mapWidth = player.mapWidth + 10
+                                })
                             end,
 
                             onActivation = function(obj)
+                                obj.consumable = true
+
                                 Timer.tween(1, {
                                     [obj] = {y = (blockHeight + y - 1) * TILE_SIZE}
                                 })
@@ -171,7 +178,8 @@ function LevelMaker.generate(width, height)
                         solid = false,
                         type = 'key',
 
-                        onConsume = function()
+                        onConsume = function(player)
+                            player.level.key = true
                             gSounds['pickup']:play()
                         end,
                     }
@@ -195,7 +203,8 @@ function LevelMaker.generate(width, height)
                         solid = true,
                         type = 'lockBlock',
 
-                        onConsume = function()
+                        onConsume = function(player)
+                            player.level.lockBlock = true
                             gSounds['pickup']:play()
                         end,
 

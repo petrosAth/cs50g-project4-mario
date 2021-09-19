@@ -72,16 +72,6 @@ function PlayerFallingState:update(dt)
                 end
             elseif object.consumable then
                 object.onConsume(self.player)
-                if object.type == 'key' then
-                    self.player.level.key = true
-                elseif object.type == 'lockBlock' then
-                    self.player.level.lockBlock = true
-                elseif object.type == 'flag' then
-                    gStateMachine:change('post', {
-                        score = self.player.score,
-                        mapWidth = self.player.mapWidth + 10
-                    })
-                end
                 table.remove(self.player.level.objects, k)
             end
         end

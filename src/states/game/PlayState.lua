@@ -68,8 +68,6 @@ function PlayState:render()
     love.graphics.print(tostring(self.player.score), 5, 5)
     love.graphics.setColor(1, 1, 1, 1)
     love.graphics.print(tostring(self.player.score), 4, 4)
-    love.graphics.print(tostring(self.score), 4, 20)
-    love.graphics.print(tostring(self.mapWidth), 4, 35)
 end
 
 function PlayState:updateCamera()
@@ -86,7 +84,7 @@ end
 --[[
     Spawn player and make sure ther is no chasm where it lands
 ]]
-function PlayState:spawnPlayer(mapWidth, totalScore)
+function PlayState:spawnPlayer()
     for x = 1, self.tileMap.width do
 
         for y = 1, self.tileMap.height do
